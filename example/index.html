@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+  </head>
+
+  <body>
+    <div class="container">
+      <br/>
+      <h2>Detecting Acceleration</h2>
+      <p>Only showing motion that registers above 1 m/s^2 on a axis.</p>
+      <div class="row" style="text-align: center">
+        <div class="twelve columns"><p> <span>X :</span> <span id="x"></span> </p></div>
+        <div class="twelve columns"><p> <span>Y :</span> <span id="y"></span> </p></div>
+        <div class="twelve columns"><p> <span>Z :</span> <span id="z"></span> </p></div>
+      </div>
+
+      <h2>Detecting Orientation</h2>
+      <p>Only orientation changes of more then 1 degree on an axis.</p>
+      <div class="row" style="text-align: center">
+        <div class="twelve columns"><p> <span>alpha :</span> <span id="alpha"></span> </p></div>
+        <div class="twelve columns"><p> <span>beta :</span> <span id="beta"></span> </p></div>
+        <div class="twelve columns"><p> <span>gamma :</span> <span id="gamma"></span> </p></div>
+      </div>
+    </div>
+    <script src="webmo.js"></script>
+    <script>
+      webmo.motion.deviceHasMotionSupport().then((supported) => {
+        if (supported) {
+          const callback = (data) => {
+            document.getElementById('x').innerHTML = data.acceleration.x.toFixed(6)
+            document.getElementById('y').innerHTML = data.acceleration.y.toFixed(6)
+            document.getElementById('z').innerHTML = data.acceleration.z.toFixed(6)
+          }
+
+          const opts = {
+            threshold: 1
+          }
+          const listener = new webmo.motion.MotionListener(callback, opts)
+        } else {
+          alert('device does not appear to support motion')
+        }
+      })
+
+      webmo.orientation.deviceHasOrientationSupport().then((supported) => {
+        if (supported) {
+          const callback = (data) => {
+            document.getElementById('alpha').innerHTML = data.alpha.toFixed(6)
+            document.getElementById('beta').innerHTML = data.beta.toFixed(6)
+            document.getElementById('gamma').innerHTML = data.gamma.toFixed(6)
+          }
+
+          const opts = {
+            threshold: 1
+          }
+          const listener = new webmo.orientation.OrientationListener(callback, opts)
+        } else {
+          alert('device does not appear to support orientation')
+        }
+      })
+    </script>
+  </body>
+</html>
