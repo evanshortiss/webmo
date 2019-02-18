@@ -32,17 +32,30 @@ orientation event is captured is used as alpha of 0. This is only necessary on A
 
 Behaviour like this can be made configurable through options in the future.
 
+## Example
+
+To try the example application do the following:
+
+```
+git clone https://github.com/evanshortiss/webmo.git
+cd webmo
+npm i
+npm start
+```
+
+Now visit port 8080 using a device that supports motion and orientation, for example a modern mobile phone, and you'll see live data from the sensors.
+
 ## API
 
 ### webmo.motion
 
 All motion related functions fall under this namespace.
 
-### webmo.motion.mayHaveMotionSupport()
+### webmo.motion.mayHaveMotionSupport(): boolean
 
 Returns `true` if `DeviceMotionEvent` is available.
 
-### webmo.motion.deviceHasMotionSupport(timeout: number): Promise<boolean>
+### webmo.motion.deviceHasMotionSupport(timeout: number): Promise\<boolean>
 
 Tests for motion support by detecting motion events. Defaults to a 1000 millisecond timeout before resolving with `false`. Resolves with `true` if a motion event is detected before `timeout` is reached.
 
@@ -86,7 +99,7 @@ Stop listening for motion events.
 
 Changes the threshold required for this instance to consider a motion event worth emitting.
 
-#### webmo.motion.MotionListener.isListening()
+#### webmo.motion.MotionListener.isListening(): boolean
 
 Returns `true` if the instance is listening for motion events.
 

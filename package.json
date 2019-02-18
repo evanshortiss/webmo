@@ -4,7 +4,7 @@
   "description": "Device motion and orientation capture library with TypeScript support.",
   "main": "src/index.js",
   "scripts": {
-    "serve:example": "npm run build:browser && cp dist/webmo.js example/ && http-server example/",
+    "start": "npm run build:browser && cp dist/webmo.js example/ && http-server example/",
     "build:tsc": "tsc",
     "build:browser": "npm run build:tsc && browserify -s webmo -e src/index.js -o dist/webmo.js && uglifyjs -cm -o dist/webmo.min.js dist/webmo.js",
     "format": "prettier --fix --single-quote src/*.ts --write",
