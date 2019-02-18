@@ -9,7 +9,7 @@
     "build:browser": "npm run build:tsc && browserify -s webmo -e src/index.js -o dist/webmo.js && uglifyjs -cm -o dist/webmo.min.js dist/webmo.js",
     "format": "prettier --fix --single-quote src/*.ts --write",
     "prepublish": "npm run build:tsc",
-    "gzip:size": "npm run build:browser gzip -c dist/webmo.min.js | wc -c"
+    "gzip:size": "npm run build:browser && gzip -c dist/webmo.min.js | wc -c"
   },
   "keywords": [],
   "author": "Evan Shortiss <evanshortiss@gmail.com>",

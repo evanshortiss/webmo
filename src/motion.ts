@@ -1,13 +1,13 @@
-import { AbstractListener } from "./abstract-listener";
+import { AbstractListener } from './abstract-listener';
 
-const EVT_NAME = 'devicemotion'
+const EVT_NAME = 'devicemotion';
 
 /**
  * Determies if DeviceMotionEvent is available for use.
  * This does not indicate that the device actually supports motion.
  */
-export function mayHaveMotionSupport () {
-  return typeof DeviceMotionEvent !== 'undefined'
+export function mayHaveMotionSupport() {
+  return typeof DeviceMotionEvent !== 'undefined';
 }
 
 /**
@@ -15,49 +15,68 @@ export function mayHaveMotionSupport () {
  * Waits up to 500 milliseconds for an event by default, but can be extended.
  * @param timeout Time to wait before deciding motion support is unavailable.
  */
-export function deviceHasMotionSupport (timeout = 1000) {
-  return new Promise((resolve) => {
+export function deviceHasMotionSupport(timeout = 1000) {
+  return new Promise(resolve => {
     const listener = (e: DeviceMotionEvent) => {
-      window.removeEventListener(EVT_NAME, listener)
+      window.removeEventListener(EVT_NAME, listener);
       if (e.acceleration) {
-        resolve(true)
+        resolve(true);
       } else {
-        resolve(false)
+        resolve(false);
       }
-    }
+    };
 
-    window.addEventListener(EVT_NAME, listener)
+    window.addEventListener(EVT_NAME, listener);
 
-    setTimeout(() => resolve(false), timeout)
-  })
+    setTimeout(() => resolve(false), timeout);
+  });
 }
 
 export interface MotionListenerEvent {
   acceleration: {
-    x: number
-    y: number
-    z: number
-  }
-  timestamp: number
+    x: number;
+    y: number;
+    z: number;
+  };
+  timestamp: number;
 }
 
-export class MotionListener extends AbstractListener <MotionListenerEvent, DeviceMotionEvent> {
-  protected eventName = EVT_NAME
+export class MotionListener extends AbstractListener<
+  MotionListenerEvent,
+  DeviceMotionEvent
+> {
+  protected eventName = EVT_NAME;
 
-  isChangeAboveThreshold (e: DeviceMotionEvent) {
-    if (!e.acceleration || typeof e.acceleration.x !== 'number' || typeof e.acceleration.y !== 'number' || typeof e.acceleration.z !== 'number') {
-      return false
+  isChangeAboveThreshold(e: DeviceMotionEvent) {
+    if (
+      !e.acceleration ||
+      typeof e.acceleration.x !== 'number' ||
+      typeof e.acceleration.y !== 'number' ||
+      typeof e.acceleration.z !== 'number'
+    ) {
+      return false;
     } else if (this.options.threshold) {
-      const { x, y, z } = e.acceleration
-      return Math.abs(x) > this.options.threshold || Math.abs(y) > this.options.threshold || Math.abs(z) > this.options.threshold
+      const { x, y, z } = e.acceleration;
+      return (
+        Math.abs(x) > this.options.threshold ||
+        Math.abs(y) > this.options.threshold ||
+        Math.abs(z) > this.options.threshold
+      );
     } else {
-      return true
+      return true;
     }
   }
 
-  onChangeEvent (e: DeviceMotionEvent) {
-    if (!e.acceleration || typeof e.acceleration.x !== 'number' || typeof e.acceleration.y !== 'number' || typeof e.acceleration.z !== 'number') {
-      throw new Error('The "acceleration" property was missing from DeviceMotionEvent. This library only works on devices that fully support this event.')
+  onChangeEvent(e: DeviceMotionEvent) {
+    if (
+      !e.acceleration ||
+      typeof e.acceleration.x !== 'number' ||
+      typeof e.acceleration.y !== 'number' ||
+      typeof e.acceleration.z !== 'number'
+    ) {
+      throw new Error(
+        'The "acceleration" property was missing from DeviceMotionEvent. This library only works on devices that fully support this event.'
+      );
     } else if (this.isChangeAboveThreshold(e)) {
       this.listener({
         acceleration: {
@@ -66,7 +85,7 @@ export class MotionListener extends AbstractListener <MotionListenerEvent, Devic
           z: e.acceleration.z
         },
         timestamp: Date.now()
-      })
+      });
     }
   }
 }
