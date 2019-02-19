@@ -67,25 +67,25 @@ export class MotionListener extends AbstractListener<
     }
   }
 
-  onChangeEvent(e: DeviceMotionEvent) {
+  formatEvent(e: DeviceMotionEvent) {
     if (
-      !e.acceleration ||
-      typeof e.acceleration.x !== 'number' ||
-      typeof e.acceleration.y !== 'number' ||
-      typeof e.acceleration.z !== 'number'
+      e.acceleration &&
+      e.acceleration.x &&
+      e.acceleration.y &&
+      e.acceleration.z
     ) {
-      throw new Error(
-        'The "acceleration" property was missing from DeviceMotionEvent. This library only works on devices that fully support this event.'
-      );
-    } else if (this.isChangeAboveThreshold(e)) {
-      this.listener({
+      return {
         acceleration: {
           x: e.acceleration.x,
           y: e.acceleration.y,
           z: e.acceleration.z
         },
         timestamp: Date.now()
-      });
+      };
+    } else {
+      throw new Error(
+        'The event.acceleration property in DeviceMotionEvents appears to be malformed'
+      );
     }
   }
 }

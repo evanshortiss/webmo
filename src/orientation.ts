@@ -60,6 +60,7 @@ export class OrientationListener extends AbstractListener<
 
   isChangeAboveThreshold(data: OrientationListenerEvent): boolean {
     const previous = this._previousEvent;
+
     if (!previous) {
       return true;
     } else if (this.options.threshold) {
@@ -74,7 +75,12 @@ export class OrientationListener extends AbstractListener<
     }
   }
 
-  onChangeEvent(e: DeviceOrientationEvent) {
+  formatEvent(e: DeviceOrientationEvent) {
+    if (!this._previousEvent) {
+      // Kind of nasty hack. Whatever...
+      this.initialEvent = e;
+    }
+
     if (
       typeof e.alpha !== 'number' ||
       typeof e.beta !== 'number' ||
@@ -84,21 +90,12 @@ export class OrientationListener extends AbstractListener<
         'The alpha, beta, or gamma property was missing from DeviceOrientationEvent. This library only works on devices that fully support this event.'
       );
     } else {
-      if (!this._previousEvent) {
-        this.initialEvent = e;
-      }
-
-      const data: OrientationListenerEvent = {
+      return {
         alpha: this.getAlpha(e.alpha),
         beta: e.beta,
         gamma: e.gamma,
         timestamp: Date.now()
       };
-
-      if (this.isChangeAboveThreshold(data)) {
-        this.listener(data);
-        this._previousEvent = data;
-      }
     }
   }
 }

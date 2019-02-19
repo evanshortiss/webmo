@@ -10,7 +10,7 @@ export abstract class AbstractListener<WrappedDomEvent, BaseEvent> {
   private _listening = false;
 
   constructor(
-    protected listener: (data: WrappedDomEvent) => void,
+    protected listener?: (data: WrappedDomEvent) => void,
     protected options: ListenerOptions = {}
   ) {
     this.options = Object.assign({ autoStart: true }, options);
@@ -49,6 +49,13 @@ export abstract class AbstractListener<WrappedDomEvent, BaseEvent> {
   }
 
   /**
+   * Returns the latest captured event if one is available.
+   */
+  public getLastCapturedEvent() {
+    return this._previousEvent;
+  }
+
+  /**
    * Returns the status of this listener.
    */
   public isListening() {
@@ -65,9 +72,31 @@ export abstract class AbstractListener<WrappedDomEvent, BaseEvent> {
   ): boolean;
 
   /**
+   * Formats a captured event to comply with the custom structure defined
+   * by the listener.
+   * @param e
+   */
+  protected abstract formatEvent(e: BaseEvent): WrappedDomEvent;
+
+  /**
+   * Fires the listener, if one was provided to the constructor.
+   * @param e
+   */
+  protected fireListener(e: WrappedDomEvent) {
+    if (this.listener) {
+      this.listener(e);
+    }
+  }
+
+  /**
    * Internal function used to determine if the orientation callback will be
    * fired.
    * @param e
    */
-  protected abstract onChangeEvent(e: BaseEvent): void;
+  protected onChangeEvent(e: BaseEvent) {
+    if (this.isChangeAboveThreshold(e)) {
+      this._previousEvent = this.formatEvent(e);
+      this.fireListener(this._previousEvent);
+    }
+  }
 }
