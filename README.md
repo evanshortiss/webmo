@@ -95,6 +95,10 @@ Start listening for motion events. Only required if `options.autoStart` was set 
 
 Stop listening for motion events.
 
+#### webmo.motion.MotionListener.setListener(callback: function|undefined) 
+
+Replace the listener function that was passed to the instance constructor.
+
 #### webmo.motion.MotionListener.setThreshold(n: number)
 
 Changes the threshold required for this instance to consider a motion event worth emitting.

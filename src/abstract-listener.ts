@@ -63,6 +63,15 @@ export abstract class AbstractListener<WrappedDomEvent, BaseEvent> {
   }
 
   /**
+   * Set the listener callback function on this instance.
+   * Can pass undefined to remove a listener.
+   * @param listener
+   */
+  public setListener (listener?: (data: WrappedDomEvent) => void) {
+    this.listener = listener
+  }
+
+  /**
    * Determines if the reported event is great enough to warrant
    * attention based on the defined threshold.
    * @param e
