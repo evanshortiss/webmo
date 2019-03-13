@@ -33,6 +33,11 @@ export function deviceHasMotionSupport(timeout = 1000) {
 }
 
 export interface MotionListenerEvent {
+  rotationRate: {
+    alpha: number;
+    beta: number;
+    gamma: number;
+  };
   acceleration: {
     x: number;
     y: number;
@@ -41,22 +46,49 @@ export interface MotionListenerEvent {
   timestamp: number;
 }
 
+export interface VerifiedMotionEvent extends DeviceMotionEvent {
+  acceleration: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  rotationRate: {
+    alpha: number;
+    beta: number;
+    gamma: number;
+  };
+}
+
 export class MotionListener extends AbstractListener<
   MotionListenerEvent,
-  DeviceMotionEvent
+  DeviceMotionEvent,
+  VerifiedMotionEvent
 > {
   protected eventName = EVT_NAME;
 
-  isChangeAboveThreshold(e: DeviceMotionEvent) {
+  verifyEventStructure(e: DeviceMotionEvent) {
     if (
-      !e.acceleration ||
-      typeof e.acceleration.x !== 'number' ||
-      typeof e.acceleration.y !== 'number' ||
-      typeof e.acceleration.z !== 'number'
+      e.acceleration &&
+      e.acceleration.x &&
+      e.acceleration.y &&
+      e.acceleration.z &&
+      e.rotationRate &&
+      e.rotationRate.alpha &&
+      e.rotationRate.beta &&
+      e.rotationRate.gamma
     ) {
-      return false;
-    } else if (this.options.threshold) {
+      return e as VerifiedMotionEvent;
+    } else {
+      throw new Error(
+        'The "acceleration" or "rotationRate" property in DeviceMotionEvent appears to be malformed. This library only works on devices that fully support this event.'
+      );
+    }
+  }
+
+  private isAboveThreshold(e: VerifiedMotionEvent) {
+    if (this.options.threshold) {
       const { x, y, z } = e.acceleration;
+
       return (
         Math.abs(x) > this.options.threshold ||
         Math.abs(y) > this.options.threshold ||
@@ -67,25 +99,29 @@ export class MotionListener extends AbstractListener<
     }
   }
 
-  formatEvent(e: DeviceMotionEvent) {
-    if (
-      e.acceleration &&
-      e.acceleration.x &&
-      e.acceleration.y &&
-      e.acceleration.z
-    ) {
-      return {
-        acceleration: {
-          x: e.acceleration.x,
-          y: e.acceleration.y,
-          z: e.acceleration.z
-        },
-        timestamp: Date.now()
-      };
-    } else {
-      throw new Error(
-        'The event.acceleration property in DeviceMotionEvents appears to be malformed'
+  private isAboveRotationRateThreshold(e: VerifiedMotionEvent) {
+    if (this.options.rotationRateThreshold) {
+      const { alpha, beta, gamma } = e.rotationRate;
+
+      return (
+        Math.abs(alpha) > this.options.rotationRateThreshold ||
+        Math.abs(beta) > this.options.rotationRateThreshold ||
+        Math.abs(gamma) > this.options.rotationRateThreshold
       );
+    } else {
+      return true;
     }
+  }
+
+  isChangeAboveThreshold(e: VerifiedMotionEvent) {
+    return this.isAboveThreshold(e) || this.isAboveRotationRateThreshold(e);
+  }
+
+  formatEvent(e: VerifiedMotionEvent) {
+    return {
+      rotationRate: e.rotationRate,
+      acceleration: e.acceleration,
+      timestamp: Date.now()
+    };
   }
 }

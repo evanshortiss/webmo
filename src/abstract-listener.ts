@@ -1,9 +1,14 @@
 export interface ListenerOptions {
   threshold?: number;
+  rotationRateThreshold?: number;
   autoStart?: boolean;
 }
 
-export abstract class AbstractListener<WrappedDomEvent, BaseEvent> {
+export abstract class AbstractListener<
+  WrappedDomEvent,
+  BaseEvent,
+  VerifiedEvent extends BaseEvent
+> {
   protected eventName = '';
   protected _previousEvent: WrappedDomEvent | undefined;
   private _internalListener = (e: any) => this.onChangeEvent(e);
@@ -67,8 +72,8 @@ export abstract class AbstractListener<WrappedDomEvent, BaseEvent> {
    * Can pass undefined to remove a listener.
    * @param listener
    */
-  public setListener (listener?: (data: WrappedDomEvent) => void) {
-    this.listener = listener
+  public setListener(listener?: (data: WrappedDomEvent) => void) {
+    this.listener = listener;
   }
 
   /**
@@ -76,16 +81,21 @@ export abstract class AbstractListener<WrappedDomEvent, BaseEvent> {
    * attention based on the defined threshold.
    * @param e
    */
-  protected abstract isChangeAboveThreshold(
-    data: WrappedDomEvent | BaseEvent
-  ): boolean;
+  protected abstract isChangeAboveThreshold(data: VerifiedEvent): boolean;
 
   /**
    * Formats a captured event to comply with the custom structure defined
    * by the listener.
    * @param e
    */
-  protected abstract formatEvent(e: BaseEvent): WrappedDomEvent;
+  protected abstract formatEvent(e: VerifiedEvent): WrappedDomEvent;
+
+  /**
+   * Accepts a browser event, performs verification, and returns an
+   * event that is verified. This is to avoid excessive null checks.
+   * @param e
+   */
+  protected abstract verifyEventStructure(e: BaseEvent): VerifiedEvent;
 
   /**
    * Fires the listener, if one was provided to the constructor.
@@ -103,8 +113,10 @@ export abstract class AbstractListener<WrappedDomEvent, BaseEvent> {
    * @param e
    */
   protected onChangeEvent(e: BaseEvent) {
-    if (this.isChangeAboveThreshold(e)) {
-      this._previousEvent = this.formatEvent(e);
+    const verifiedEvent = this.verifyEventStructure(e);
+
+    if (this.isChangeAboveThreshold(verifiedEvent)) {
+      this._previousEvent = this.formatEvent(verifiedEvent);
       this.fireListener(this._previousEvent);
     }
   }

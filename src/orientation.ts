@@ -36,9 +36,16 @@ export interface OrientationListenerEvent {
   timestamp: number;
 }
 
+export interface VerifiedOrientationEvent extends DeviceOrientationEvent {
+  alpha: number;
+  beta: number;
+  gamma: number;
+}
+
 export class OrientationListener extends AbstractListener<
   OrientationListenerEvent,
-  DeviceOrientationEvent
+  DeviceOrientationEvent,
+  VerifiedOrientationEvent
 > {
   isAndroidDevice = navigator.userAgent.match(/android/gi) !== null;
   initialEvent: DeviceOrientationEvent | undefined = undefined;
@@ -58,7 +65,21 @@ export class OrientationListener extends AbstractListener<
     }
   }
 
-  isChangeAboveThreshold(data: OrientationListenerEvent): boolean {
+  verifyEventStructure(e: DeviceOrientationEvent) {
+    if (
+      typeof e.alpha !== 'number' ||
+      typeof e.beta !== 'number' ||
+      typeof e.gamma !== 'number'
+    ) {
+      throw new Error(
+        'The "alpha", "beta", or "gamma" property from DeviceOrientationEvent appears to be malformed. This library only works on devices that fully support this event.'
+      );
+    } else {
+      return e as VerifiedOrientationEvent;
+    }
+  }
+
+  isChangeAboveThreshold(data: VerifiedOrientationEvent): boolean {
     const previous = this._previousEvent;
 
     if (!previous) {
@@ -75,28 +96,18 @@ export class OrientationListener extends AbstractListener<
     }
   }
 
-  formatEvent(e: DeviceOrientationEvent) {
+  formatEvent(e: VerifiedOrientationEvent) {
     if (!this._previousEvent) {
       // Kind of nasty hack.
       // We're saying the current evt is also initial. Whatever...
       this.initialEvent = e;
     }
 
-    if (
-      typeof e.alpha !== 'number' ||
-      typeof e.beta !== 'number' ||
-      typeof e.gamma !== 'number'
-    ) {
-      throw new Error(
-        'The alpha, beta, or gamma property was missing from DeviceOrientationEvent. This library only works on devices that fully support this event.'
-      );
-    } else {
-      return {
-        alpha: this.getAlpha(e.alpha),
-        beta: e.beta,
-        gamma: e.gamma,
-        timestamp: Date.now()
-      };
-    }
+    return {
+      alpha: this.getAlpha(e.alpha),
+      beta: e.beta,
+      gamma: e.gamma,
+      timestamp: Date.now()
+    };
   }
 }
