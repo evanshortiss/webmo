@@ -77,7 +77,8 @@ export class OrientationListener extends AbstractListener<
 
   formatEvent(e: DeviceOrientationEvent) {
     if (!this._previousEvent) {
-      // Kind of nasty hack. Whatever...
+      // Kind of nasty hack.
+      // We're saying the current evt is also initial. Whatever...
       this.initialEvent = e;
     }
 
