@@ -1,6 +1,6 @@
 # WebMo
 
-Small (~1.6KB gzipped) library to capture device motion and orientation events. 
+Small (~1.7KB gzipped) library to capture device motion, rotation, and orientation events. 
 
 ## Usage
 
@@ -69,6 +69,7 @@ A class that can be instantiated to listen for motion events. Accepts two argume
 Valid options are:
 
 * threshold (Default: 0) - Threshold required to register motion. Can be used to filter out smaller motions.
+* rotationRateThreshold (Default: 0) - Threshold required to register rotation. Can be used to filter out smaller motions.
 * autoStart (Default: true) - If motion events should be listened for immediately.
 
 Callback and data format:
@@ -81,6 +82,11 @@ const listener = new webmo.MotionListener((data) => {
   //     x: number
   //     y: number
   //     z: number
+  //   }
+  //   rotationRate: {
+  //     alpha: number
+  //     beta: number
+  //     gamma: number
   //   }
   //   timestamp: number
   // }
