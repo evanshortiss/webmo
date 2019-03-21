@@ -1,6 +1,6 @@
 {
   "name": "webmo",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A tiny library to capture device motion, rotation, and orientation events.",
   "main": "src/index.js",
   "scripts": {

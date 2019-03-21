@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 20/03/19 - 0.5.0
+* Improve documentation
+* Add helpful badges in README
+
 ## 14/03/19 - 0.4.0
 
 ### Public API Changes
