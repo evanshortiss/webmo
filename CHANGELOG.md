@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 02/04/19 - 0.5.1
+* Add iOS specific notes about security settings
+
 ## 20/03/19 - 0.5.0
 * Improve documentation
 * Add helpful badges in README

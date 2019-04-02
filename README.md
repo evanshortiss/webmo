@@ -6,6 +6,15 @@
 
 A tiny library to capture device motion, rotation, and orientation events.
 
+## iOS 12.2+ Security
+From iOS 12.2 onwards the Device Motion and Orientation APIs are disabled by
+default and can only be used by HTTPS domains. You need to enable access to
+the APIs in `Settings > Safari > Privacy & Security`.
+
+This might change in a future release to instead use a popup similar to the
+Geolocation API permission access.
+
+
 ## Usage
 
 ```ts
