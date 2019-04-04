@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 03/04/19 - 0.5.2
+* Fix return type annotion for device support tests
+
 ## 02/04/19 - 0.5.1
 * Add iOS specific notes about security settings
 

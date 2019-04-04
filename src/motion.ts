@@ -15,7 +15,7 @@ export function mayHaveMotionSupport() {
  * Waits up to 500 milliseconds for an event by default, but can be extended.
  * @param timeout Time to wait before deciding motion support is unavailable.
  */
-export function deviceHasMotionSupport(timeout = 1000) {
+export function deviceHasMotionSupport(timeout = 1000): Promise<boolean> {
   return new Promise(resolve => {
     const listener = (e: DeviceMotionEvent) => {
       window.removeEventListener(EVT_NAME, listener);
